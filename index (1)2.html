@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lojão dos Brother 2.0</title>
+<script type="text/javascript">
+	
+	//VARIAVEIS GLOBAIS
+	
+	produtos = [];
+	valorTotalVenda = 0;
+	valorTotalCompra = 0;
+	qtdProdutosVendidos = 0;
+	qtdProdutosComprados = 0;
+	do{
+		menu = parseInt(prompt("Menu:\n1- Produto\n2- Compra\n3- Venda\n4- Relatório\n0- Sair","0"));
+		switch (menu){
+			case 1: cadastro(); break;
+			case 2: comprarOuVender(true); break;
+			case 3: comprarOuVender(false); break;
+			case 4: relatorio(); break;
+			case 0: break;
+			default: alert("ERRO - Não há esta opção!"); break;
+		}
+	}while(menu != 0);
+
+	//OBJETOS
+
+	function criarProduto(codigo,nome,preco,estoque){
+		return produto = {
+				codigo: codigo,
+				nome: nome,
+				preco: preco,
+				estoque: estoque
+			}
+	}
+
+	//ACOES
+
+	function cadastro(){
+		var menuCadastro = parseInt(prompt("Menu Cadastro:\n1- Novo\n2- Excluir\n3- Sair","0"));
+		switch (menuCadastro){
+			case 1: novo(); break;
+			case 2: excluir(); break;
+			case 3: break;			
+			default: alert("ERRO - Não há esta opção!"); break;
+		}
+	}
+
+	function buscaProduto(codigo){
+		for(i = 0; i < produtos.length; i ++){
+			if(codigo == parseInt(produtos[i].codigo)){				
+				return produtos[i];
+			}
+		}
+		return 0;
+	}
+
+	function excluir(){
+		var achou = false;
+		var cd = parseInt(prompt("Código do produto para excluir:","0"));
+		for(i = 0; i < produtos.length; i ++){			
+			if(cd == parseInt(produtos[i].codigo)){				
+				if (confirm("Confirma exclusão do produto?")){
+					console.log(produtos);
+					produtos.splice(i,1);
+					achou = true;
+				}				
+			}
+		}
+		if (achou){
+			alert("Produto excluído com sucesso");			
+		}
+		else{
+			alert("Nenhum produto foi excluído");
+		}
+	}
+
+	function novo(){
+		var cd = parseInt(prompt("Código:","0"));
+		if (cd <= 0){
+			alert("Código deve ser maior do que zero!");
+			return;
+		}
+
+		var nm = prompt("Nome:","");
+		var pr = parseFloat(prompt("Preço:","R$0.00"));
+		var st = parseInt(prompt("Estoque:","0"));
+
+		if (buscaProduto(cd) != 0){
+			alert("Já existe um produto cadastrado com este código");
+			return;
+		}	
+			
+		produtos.push(criarProduto(cd,nm,pr,st));
+	}
+	
+	function comprarOuVender(comprar){		 
+		var achou = false;
+		var cdc = parseInt(prompt("Código do produto a ser " + (comprar ? "comprado" : "vendido") + ":","0"));
+		var qtd = parseInt(prompt("Quantos produtos você deseja " + (comprar ? "comprar" : "vender") + "?","0"));
+		var produtoComprarOuVender = buscaProduto(cdc);
+		
+		if(produtoComprarOuVender != 0){				
+			if (comprar){
+				produtoComprarOuVender.estoque += qtd;
+				qtdProdutosComprados += qtd;
+				valorTotalCompra += produtoComprarOuVender.preco * qtd;
+			}
+			else {
+				if ((produtoComprarOuVender.estoque - qtd) < 0){
+					alert("Acabou o estoque para esta quantidade! (" + qtd  + ")");
+					return;
+				}
+				produtoComprarOuVender.estoque -= qtd;
+				qtdProdutosVendidos += qtd;
+				valorTotalVenda += produtoComprarOuVender.preco * qtd;
+			}				
+
+			alert("Produto " + (comprar ? "comprado" : "vendido") + " com sucesso!\nProduto: " + 
+			 	produtoComprarOuVender.codigo + ' - ' + produtoComprarOuVender.nome + "\nEstoque: " + produtoComprarOuVender.estoque + "\nPreço unitário: " + produtoComprarOuVender.preco);		
+		}		
+		else{
+			alert("Produto não encontrado com este código");		
+		}		
+	}
+
+	//INICIO RELATORIOS
+
+	function relatorio(){
+		var menuRelatorio = parseInt(prompt("Menu:\n1- Produto\n2- Compra\n3- Venda","0"));
+		switch (menuRelatorio){
+			case 1: relatorioProduto(); break;
+			case 2: relatorioCompra(); break;
+			case 3: relatorioVenda(); break;			
+			default: alert("ERRO - Não há esta opção!"); break;
+		}
+	}
+
+	function relatorioProduto(){
+		var entrou = false;
+		for(i = 0;i < produtos.length; i++ ){
+			entrou = true;
+			alert("***RELATÓRIO DE PRODUTOS***"
+				+ "\nCódigo: " + produtos[i].codigo
+				+ "\nNome: " + produtos[i].nome
+				+ "\nPreço: " + produtos[i].preco
+				+ "\nQuantidade em estoque: " + produtos[i].estoque);
+		}
+		if (!entrou){
+			alert("Não há produtos cadastrados");
+		}
+	}
+
+	function relatorioCompra(){
+		alert("***RELATÓRIO DE COMPRA***"
+				+ "\nQuantidade de produtos Comprados: " + qtdProdutosComprados
+				+ "\nValor Total de Compra : " + valorTotalCompra);			
+	}
+
+	function relatorioVenda(){
+		alert("***RELATÓRIO DE VENDA***"
+				+ "\nQuantidade de produtos Vendidos: " + qtdProdutosVendidos
+				+ "\nValor Total de Venda : " + valorTotalVenda);
+	}
+
+</script>
+</head>
+<body>
+</body>
+</html>
